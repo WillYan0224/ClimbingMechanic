@@ -100,7 +100,16 @@ void AClimbingMechanicCharacter::Look(const FInputActionValue& Value)
 
 void AClimbingMechanicCharacter::OnClimbActionStarted(const FInputActionValue& Value)
 {
-	Debug::Print(TEXT("Climb Action Triggered"), FColor::Green, 5.f);
+	if(!CustomMovementComponent) return;
+
+	if(!CustomMovementComponent->IsClimbing())
+	{
+		CustomMovementComponent->ToggleClimbing(true);
+	}
+	else
+	{
+		CustomMovementComponent->ToggleClimbing(false);
+	}
 }
 
 void AClimbingMechanicCharacter::DoMove(float Right, float Forward)
