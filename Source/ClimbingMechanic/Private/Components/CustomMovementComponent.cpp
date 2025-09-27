@@ -116,6 +116,12 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 
 	TraceClimbableSurfaces();
 	ProcessClimbableSurfacesInfo();
+
+	if (CheckShouldStopClimbing())
+	{
+		StopClimbing();
+	}
+
 	RestorePreAdditiveRootMotionVelocity();
 
 	if( !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity() )
@@ -188,6 +194,22 @@ void UCustomMovementComponent::SnapMovementToClimbableSurface(float DeltaTime)
 
 	UpdatedComponent->MoveComponent(SnapVector * DeltaTime * MaxClimbSpeed, UpdatedComponent->GetComponentQuat(), true);
 	
+}
+
+bool UCustomMovementComponent::CheckShouldStopClimbing()
+{
+	if (ClimbableSurfacesTracedResults.IsEmpty()) return true;
+
+	const float DotResult = FVector::DotProduct(CurrentClimbableSurfaceNormal, FVector::UpVector);
+	const float ThetaAngle = FMath::RadiansToDegrees(FMath::Acos(DotResult));
+
+	if (ThetaAngle <= 60.f && ThetaAngle >= -60.f)
+	{
+		return true;
+	}
+	
+	Debug::Print("Angle: " + FString::SanitizeFloat(ThetaAngle), FColor::Yellow, .0f, 3.f);
+	return  false;
 }
 
 bool UCustomMovementComponent::IsClimbing() const

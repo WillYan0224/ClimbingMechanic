@@ -55,6 +55,8 @@ private:
 	// Main Climb movement
 	FQuat GetClimbRotation(float DeltaTime);
 	void SnapMovementToClimbableSurface(float DeltaTime);
+	bool CheckShouldStopClimbing();
+	
 #pragma endregion
 	
 protected:
