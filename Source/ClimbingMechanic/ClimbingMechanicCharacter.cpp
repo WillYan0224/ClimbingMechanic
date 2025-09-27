@@ -4,17 +4,19 @@
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Public/Components/CustomMovementComponent.h"
+
 #include "DebugHelper.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-AClimbingMechanicCharacter::AClimbingMechanicCharacter()
+AClimbingMechanicCharacter::AClimbingMechanicCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -24,6 +26,9 @@ AClimbingMechanicCharacter::AClimbingMechanicCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	// Movement component
+	CustomMovementComponent = Cast<UCustomMovementComponent>(GetCharacterMovement());
+	
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
@@ -77,25 +82,17 @@ void AClimbingMechanicCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 void AClimbingMechanicCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	if (!CustomMovementComponent) return;
 
-	// route the input
-	DoMove(MovementVector.X, MovementVector.Y);
-}
-
-void AClimbingMechanicCharacter::Look(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	// route the input
-	DoLook(LookAxisVector.X, LookAxisVector.Y);
-}
-
-void AClimbingMechanicCharacter::OnClimbActionStarted(const FInputActionValue& Value)
-{
-	Debug::Print(TEXT("Climb Action Triggered"), FColor::Green, 5.f);
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+	if (CustomMovementComponent->IsClimbing())
+	{
+		DoClimb(MovementVector.X, MovementVector.Y);
+	}
+	else
+	{
+		DoMove(MovementVector.X, MovementVector.Y);
+	}
 }
 
 void AClimbingMechanicCharacter::DoMove(float Right, float Forward)
@@ -117,6 +114,51 @@ void AClimbingMechanicCharacter::DoMove(float Right, float Forward)
 		AddMovementInput(RightDirection, Right);
 	}
 }
+
+void AClimbingMechanicCharacter::DoClimb(float Right, float Forward)
+{
+	if (GetController() != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = GetController()->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FVector::CrossProduct(-CustomMovementComponent->GetClimbableSurfaceNormal(), GetActorRightVector());
+
+		// get right vector 
+		const FVector RightDirection = FVector::CrossProduct(-CustomMovementComponent->GetClimbableSurfaceNormal(), -GetActorUpVector());
+
+		// add movement 
+		AddMovementInput(ForwardDirection, Forward);
+		AddMovementInput(RightDirection, Right);
+	}
+}
+
+
+void AClimbingMechanicCharacter::Look(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	// route the input
+	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void AClimbingMechanicCharacter::OnClimbActionStarted(const FInputActionValue& Value)
+{
+	if(!CustomMovementComponent) return;
+
+	if(!CustomMovementComponent->IsClimbing()) 
+	{
+		CustomMovementComponent->ToggleClimbing(true);
+	}
+	else
+	{
+		CustomMovementComponent->ToggleClimbing(false);
+	}
+}
+
 
 void AClimbingMechanicCharacter::DoLook(float Yaw, float Pitch)
 {

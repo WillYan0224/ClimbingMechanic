@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UCustomMovementComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -18,6 +19,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  A simple player-controllable third person character
  *  Implements a controllable orbiting camera
  */
+
 UCLASS(abstract)
 class AClimbingMechanicCharacter : public ACharacter
 {
@@ -33,10 +35,13 @@ class AClimbingMechanicCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UCustomMovementComponent* CustomMovementComponent;
+	
 public:
 
 	/** Constructor */
-	AClimbingMechanicCharacter();	
+	AClimbingMechanicCharacter(const FObjectInitializer& ObjectInitializer);	
 	
 protected:
 
@@ -68,6 +73,9 @@ protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
+	
+	void DoClimb(float Right, float Forward);
+	
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
@@ -100,5 +108,9 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	FORCEINLINE class UCustomMovementComponent* GetCustomMovementComponent() const { return CustomMovementComponent; }
+
+	
 };
 
