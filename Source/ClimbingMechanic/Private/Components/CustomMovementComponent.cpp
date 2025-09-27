@@ -146,23 +146,23 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 
 void UCustomMovementComponent::ProcessClimbableSurfacesInfo()
 {
-	CurrentClimableSurfaceLocation = FVector::ZeroVector;
-	CurrentClimableSurfaceNormal = FVector::ZeroVector;
+	CurrentClimbableSurfaceLocation = FVector::ZeroVector;
+	CurrentClimbableSurfaceNormal = FVector::ZeroVector;
 
 	if (ClimbableSurfacesTracedResults.IsEmpty()) return;
 	for (const FHitResult& HitResult : ClimbableSurfacesTracedResults)
 	{
 		if (HitResult.bBlockingHit)
 		{
-			CurrentClimableSurfaceLocation += HitResult.ImpactPoint;
-			CurrentClimableSurfaceNormal += HitResult.ImpactNormal;
+			CurrentClimbableSurfaceLocation += HitResult.ImpactPoint;
+			CurrentClimbableSurfaceNormal += HitResult.ImpactNormal;
 		}
 	}
-	CurrentClimableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
-	CurrentClimableSurfaceNormal = CurrentClimableSurfaceNormal.GetSafeNormal();
+	CurrentClimbableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
+	CurrentClimbableSurfaceNormal = CurrentClimbableSurfaceNormal.GetSafeNormal();
 
-	Debug::Print("Location: " + CurrentClimableSurfaceLocation.ToString(), FColor::Green, .0f,  1.f);
-	Debug::Print("Normal: " + CurrentClimableSurfaceNormal.ToString(), FColor::Red, .0f,  2.f);
+	Debug::Print("Location: " + CurrentClimbableSurfaceLocation.ToString(), FColor::Green, .0f,  1.f);
+	Debug::Print("Normal: " + CurrentClimbableSurfaceNormal.ToString(), FColor::Red, .0f,  2.f);
 }
 
 FQuat UCustomMovementComponent::GetClimbRotation(float DeltaTime)
@@ -173,7 +173,7 @@ FQuat UCustomMovementComponent::GetClimbRotation(float DeltaTime)
 		return CurrentQuat;
 	}
 
-	const FQuat TargetQuat = FRotationMatrix::MakeFromX(-CurrentClimableSurfaceNormal).ToQuat();
+	const FQuat TargetQuat = FRotationMatrix::MakeFromX(-CurrentClimbableSurfaceNormal).ToQuat();
 	return FMath::QInterpTo(CurrentQuat, TargetQuat, DeltaTime, 7.f);
 	
 }
@@ -183,8 +183,8 @@ void UCustomMovementComponent::SnapMovementToClimbableSurface(float DeltaTime)
 	const FVector ComponentForward = UpdatedComponent->GetForwardVector();
 	const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
 
-	const FVector ProjectedCharacterToSurface = (CurrentClimableSurfaceLocation - ComponentLocation).ProjectOnTo(ComponentForward);
-	const FVector SnapVector = -CurrentClimableSurfaceNormal * ProjectedCharacterToSurface.Length();
+	const FVector ProjectedCharacterToSurface = (CurrentClimbableSurfaceLocation - ComponentLocation).ProjectOnTo(ComponentForward);
+	const FVector SnapVector = -CurrentClimbableSurfaceNormal * ProjectedCharacterToSurface.Length();
 
 	UpdatedComponent->MoveComponent(SnapVector * DeltaTime * MaxClimbSpeed, UpdatedComponent->GetComponentQuat(), true);
 	

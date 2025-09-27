@@ -73,6 +73,9 @@ protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
+	
+	void DoClimb(float Right, float Forward);
+	
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 

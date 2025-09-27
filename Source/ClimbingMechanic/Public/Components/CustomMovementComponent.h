@@ -27,7 +27,7 @@ public:
 	
 	void ToggleClimbing(bool bEnableClimb);
 	bool IsClimbing() const;
-
+	FORCEINLINE FVector GetClimbableSurfaceNormal() const { return CurrentClimbableSurfaceNormal; }
 	
 protected:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -77,8 +77,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesToTrace;
 
-	FVector CurrentClimableSurfaceNormal = FVector::ZeroVector;
-	FVector CurrentClimableSurfaceLocation = FVector::ZeroVector;
+	FVector CurrentClimbableSurfaceNormal = FVector::ZeroVector;
+	FVector CurrentClimbableSurfaceLocation = FVector::ZeroVector;
 };
 
 
