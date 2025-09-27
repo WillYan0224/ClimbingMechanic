@@ -33,6 +33,8 @@ protected:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+	virtual float GetMaxSpeed() const override;
+	virtual float GetMaxAcceleration() const override;
 
 private:
 
@@ -40,7 +42,7 @@ private:
 	TArray<FHitResult> DoMultiCapsuleTraceByObject(FVector Start, FVector End, bool bShowDebug = false, bool bDrawPersistantShapes = false);
 	FHitResult DoLineTraceSingleByObject(const FVector& Start,const FVector& End,bool bShowDebugShape = false, bool bDrawPersistantShapes = false);
 
-	// Core climbing logic
+#pragma region  Core
 	bool TraceClimbableSurfaces();
 	FHitResult TraceFromEyeHeight(float TraceDistance,float TraceStartOffset = 0.f);
 	bool CanStartClimbing();
@@ -49,6 +51,11 @@ private:
 	void PhysClimb(float deltaTime, int32 Iterations);
 	TArray<FHitResult> ClimbableSurfacesTracedResults;
 	void ProcessClimbableSurfacesInfo();
+
+	// Main Climb movement
+	FQuat GetClimbRotation(float DeltaTime);
+	void SnapMovementToClimbableSurface(float DeltaTime);
+#pragma endregion
 	
 protected:
 	
@@ -62,8 +69,16 @@ protected:
 	float MaxBreakClimbDeceleration = 2048.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
+	float MaxClimbSpeed = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
+	float MaxClimbAcceleration = 250.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesToTrace;
 
 	FVector CurrentClimableSurfaceNormal = FVector::ZeroVector;
 	FVector CurrentClimableSurfaceLocation = FVector::ZeroVector;
 };
+
+
