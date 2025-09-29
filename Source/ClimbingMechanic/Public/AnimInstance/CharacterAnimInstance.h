@@ -27,6 +27,7 @@ private:
 	void GetAirSpeed();
 	void GetShouldMove();
 	void GetIsFalling();
+	void GetIsClimbing();
 
 	UPROPERTY()
 	TObjectPtr<AClimbingMechanicCharacter> ClimbingSystemCharacter;
@@ -41,6 +42,8 @@ private:
 	bool bShouldMove;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = References, meta = (AllowPrivateAccess = "true"))
 	bool bIsFalling;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = References, meta = (AllowPrivateAccess = "true"))
+	bool bIsClimbing;
 	
 	
 };
