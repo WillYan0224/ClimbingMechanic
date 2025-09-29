@@ -6,6 +6,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "DebugHelper.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+
 
 void UCustomMovementComponent::BeginPlay()
 {
@@ -309,6 +311,11 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
 	const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
 	return DoLineTraceSingleByObject(Start,End);
+}
+
+FVector UCustomMovementComponent::GetUnrotatedClimbVelocity() const
+{
+	return UKismetMathLibrary::Quat_UnrotateVector(UpdatedComponent->GetComponentQuat(), Velocity);
 }
 
 void UCustomMovementComponent::PlayClimbMontage(UAnimMontage* MontageToPlay)
