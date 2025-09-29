@@ -9,6 +9,9 @@
 /**
  * 
  */
+class UAnimMontage;
+class UAnimInstance;
+
 UENUM(BlueprintType)
 namespace ECustomMovementMode
 {
@@ -30,12 +33,14 @@ public:
 	FORCEINLINE FVector GetClimbableSurfaceNormal() const { return CurrentClimbableSurfaceNormal; }
 	
 protected:
+
+	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
 	virtual float GetMaxSpeed() const override;
 	virtual float GetMaxAcceleration() const override;
-
+	
 private:
 
 	// Climb trace
@@ -56,6 +61,11 @@ private:
 	FQuat GetClimbRotation(float DeltaTime);
 	void SnapMovementToClimbableSurface(float DeltaTime);
 	bool CheckShouldStopClimbing();
+
+	// Delegate combo for montages
+	void PlayClimbMontage(UAnimMontage* ClimbMontage);
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	
 #pragma endregion
 	
@@ -75,12 +85,20 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	float MaxClimbAcceleration = 250.f;
-	
+		
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesToTrace;
 
 	FVector CurrentClimbableSurfaceNormal = FVector::ZeroVector;
 	FVector CurrentClimbableSurfaceLocation = FVector::ZeroVector;
+
+	// Animation & Montages
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
+	TObjectPtr<UAnimMontage> IdleToClimbMontage;
+	UPROPERTY()
+	TObjectPtr<UAnimInstance> OwningPlayerAnimInstance;
+	
 };
+
 
 
