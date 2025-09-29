@@ -322,5 +322,8 @@ void UCustomMovementComponent::PlayClimbMontage(UAnimMontage* MontageToPlay)
 
 void UCustomMovementComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	Debug::Print(TEXT("Montage Ended"));
+	if (Montage == IdleToClimbMontage)
+	{
+		StartClimbing();
+	}
 }
