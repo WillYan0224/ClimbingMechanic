@@ -162,6 +162,14 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 	}
 
 	SnapMovementToClimbableSurface(deltaTime);
+	if (CheckHasReachedLedge())
+	{
+		Debug::Print(TEXT("ledge reached"), FColor::Green, 2.f, 1.f);
+	}
+	else
+	{
+		Debug::Print(TEXT("no ledge"), FColor::Red, 2.f, 1.f);
+	}
 }
 
 void UCustomMovementComponent::ProcessClimbableSurfacesInfo()
@@ -229,7 +237,7 @@ bool UCustomMovementComponent::CheckHasReachedFloor()
 	const FVector Start = UpdatedComponent->GetComponentLocation() + DownVector * 50.f;
 	const FVector End = Start + DownVector;
 
-	TArray<FHitResult> FloorTraceResults = DoMultiCapsuleTraceByObject(Start, End, true);
+	TArray<FHitResult> FloorTraceResults = DoMultiCapsuleTraceByObject(Start, End);
 
 	if (FloorTraceResults.IsEmpty()) return false;
 	
@@ -237,6 +245,28 @@ bool UCustomMovementComponent::CheckHasReachedFloor()
 	{
 		const bool bFloorReached = 	FVector::Parallel(-HitResult.ImpactNormal, FVector::UpVector) && GetUnrotatedClimbVelocity().Z < -10.f;
 		if (bFloorReached)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UCustomMovementComponent::CheckHasReachedLedge()
+{
+	// 2-times trace UP -> Front -> Down
+	// Trace above eye height to see if there is a ledge
+	FHitResult LedgeHitResult =	TraceFromEyeHeight(100.f, 50.f);
+	// First trace forward to see if there is a wall
+	// No Hit = Possible ledge
+	if (!LedgeHitResult.bBlockingHit)
+	{
+		const FVector WalkableSurfaceTraceStartPt = LedgeHitResult.TraceEnd;
+		const FVector DownVector = -UpdatedComponent->GetUpVector();
+		const FVector WalkableSurfaceTraceEndPt = WalkableSurfaceTraceStartPt + DownVector * 150.f;
+		// Second trace down to see if there is a walkable surface
+		FHitResult WalkableSurfaceHitResult = DoLineTraceSingleByObject(WalkableSurfaceTraceStartPt, WalkableSurfaceTraceEndPt, true);
+		if (WalkableSurfaceHitResult.bBlockingHit && GetUnrotatedClimbVelocity().Z > 10.f)
 		{
 			return true;
 		}
@@ -331,7 +361,7 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
 	const FVector Start = ComponentLocation + EyeHeightOffset;
 	const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
-	return DoLineTraceSingleByObject(Start,End);
+	return DoLineTraceSingleByObject(Start,End, true);
 }
 
 FVector UCustomMovementComponent::GetUnrotatedClimbVelocity() const
