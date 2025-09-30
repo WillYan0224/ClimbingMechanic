@@ -41,6 +41,7 @@ protected:
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
 	virtual float GetMaxSpeed() const override;
 	virtual float GetMaxAcceleration() const override;
+	virtual FVector ConstrainAnimRootMotionVelocity(const FVector& RootMotionVelocity, const FVector& CurrentVelocity) const override;
 	
 private:
 
@@ -98,8 +99,12 @@ protected:
 	// Animation & Montages
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	TObjectPtr<UAnimMontage> IdleToClimbMontage;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
+	TObjectPtr<UAnimMontage> ClimbToTopMontage;
 	UPROPERTY()
 	TObjectPtr<UAnimInstance> OwningPlayerAnimInstance;
+
+	
 	
 };
 
