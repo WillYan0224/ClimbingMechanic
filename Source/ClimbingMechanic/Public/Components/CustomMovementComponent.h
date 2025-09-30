@@ -63,6 +63,7 @@ private:
 	void SnapMovementToClimbableSurface(float DeltaTime);
 	bool CheckShouldStopClimbing();
 	bool CheckHasReachedFloor();
+	bool CheckHasReachedLedge();
 
 	// Delegate combo for montages
 	void PlayClimbMontage(UAnimMontage* ClimbMontage);
