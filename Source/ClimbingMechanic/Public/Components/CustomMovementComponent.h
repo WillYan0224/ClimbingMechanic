@@ -62,6 +62,7 @@ private:
 	FQuat GetClimbRotation(float DeltaTime);
 	void SnapMovementToClimbableSurface(float DeltaTime);
 	bool CheckShouldStopClimbing();
+	bool CheckHasReachedFloor();
 
 	// Delegate combo for montages
 	void PlayClimbMontage(UAnimMontage* ClimbMontage);

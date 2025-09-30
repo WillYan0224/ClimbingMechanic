@@ -130,12 +130,12 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 
 	TraceClimbableSurfaces();
 	ProcessClimbableSurfacesInfo();
-
-	if (CheckShouldStopClimbing())
+	
+	if (CheckShouldStopClimbing() || CheckHasReachedFloor())
 	{
 		StopClimbing();
 	}
-
+		
 	RestorePreAdditiveRootMotionVelocity();
 
 	if( !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity() )
@@ -221,6 +221,27 @@ bool UCustomMovementComponent::CheckShouldStopClimbing()
 	}
 	
 	return  false;
+}
+
+bool UCustomMovementComponent::CheckHasReachedFloor()
+{
+	const FVector DownVector = -UpdatedComponent->GetUpVector();
+	const FVector Start = UpdatedComponent->GetComponentLocation() + DownVector * 50.f;
+	const FVector End = Start + DownVector;
+
+	TArray<FHitResult> FloorTraceResults = DoMultiCapsuleTraceByObject(Start, End, true);
+
+	if (FloorTraceResults.IsEmpty()) return false;
+	
+	for (const FHitResult& HitResult : FloorTraceResults)
+	{
+		const bool bFloorReached = 	FVector::Parallel(-HitResult.ImpactNormal, FVector::UpVector) && GetUnrotatedClimbVelocity().Z < -10.f;
+		if (bFloorReached)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 bool UCustomMovementComponent::IsClimbing() const
