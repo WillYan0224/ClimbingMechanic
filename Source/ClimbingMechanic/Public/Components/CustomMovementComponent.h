@@ -54,6 +54,7 @@ private:
 	FHitResult TraceFromEyeHeight(float TraceDistance,float TraceStartOffset = 0.f);
 	bool CanStartClimbing();
 	void StartClimbing();
+	bool CanClimbDownLedge();
 	void StopClimbing();
 	void PhysClimb(float deltaTime, int32 Iterations);
 	TArray<FHitResult> ClimbableSurfacesTracedResults;
@@ -82,7 +83,7 @@ protected:
 	float CapsuleTraceHalfHeight = 80.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
-	float MaxBreakClimbDeceleration = 2048.f;
+	float MaxBreakClimbDeceleration = 400.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	float MaxClimbSpeed = 100.f;
@@ -93,6 +94,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesToTrace;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
+	float ClimbDownWalkableSurfaceTraceOffset = 50.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
+	float ClimbDownLedgeTraceOffset = 50.f;
+
+
+	
 	FVector CurrentClimbableSurfaceNormal = FVector::ZeroVector;
 	FVector CurrentClimbableSurfaceLocation = FVector::ZeroVector;
 
@@ -101,6 +110,9 @@ protected:
 	TObjectPtr<UAnimMontage> IdleToClimbMontage;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
 	TObjectPtr<UAnimMontage> ClimbToTopMontage;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterMovement|Climbing")
+	TObjectPtr<UAnimMontage> ClimbDownLedgeMontage;
+	
 	UPROPERTY()
 	TObjectPtr<UAnimInstance> OwningPlayerAnimInstance;
 
