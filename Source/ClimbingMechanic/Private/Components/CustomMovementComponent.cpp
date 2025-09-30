@@ -82,6 +82,20 @@ float UCustomMovementComponent::GetMaxAcceleration() const
 	}
 }
 
+FVector UCustomMovementComponent::ConstrainAnimRootMotionVelocity(const FVector& RootMotionVelocity,
+	const FVector& CurrentVelocity) const
+{
+	const bool bIsPlayingRootMotionMontage = IsFalling() && OwningPlayerAnimInstance && OwningPlayerAnimInstance->IsAnyMontagePlaying();
+	if (bIsPlayingRootMotionMontage)
+	{
+		return RootMotionVelocity;
+	}
+	else
+	{
+		return Super::ConstrainAnimRootMotionVelocity(RootMotionVelocity, CurrentVelocity);
+	}
+}
+
 void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb)
 {
 	if (bEnableClimb)
@@ -164,11 +178,7 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 	SnapMovementToClimbableSurface(deltaTime);
 	if (CheckHasReachedLedge())
 	{
-		Debug::Print(TEXT("ledge reached"), FColor::Green, 2.f, 1.f);
-	}
-	else
-	{
-		Debug::Print(TEXT("no ledge"), FColor::Red, 2.f, 1.f);
+		PlayClimbMontage(ClimbToTopMontage);
 	}
 }
 
@@ -265,7 +275,7 @@ bool UCustomMovementComponent::CheckHasReachedLedge()
 		const FVector DownVector = -UpdatedComponent->GetUpVector();
 		const FVector WalkableSurfaceTraceEndPt = WalkableSurfaceTraceStartPt + DownVector * 150.f;
 		// Second trace down to see if there is a walkable surface
-		FHitResult WalkableSurfaceHitResult = DoLineTraceSingleByObject(WalkableSurfaceTraceStartPt, WalkableSurfaceTraceEndPt, true);
+		FHitResult WalkableSurfaceHitResult = DoLineTraceSingleByObject(WalkableSurfaceTraceStartPt, WalkableSurfaceTraceEndPt);
 		if (WalkableSurfaceHitResult.bBlockingHit && GetUnrotatedClimbVelocity().Z > 10.f)
 		{
 			return true;
@@ -361,7 +371,7 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
 	const FVector Start = ComponentLocation + EyeHeightOffset;
 	const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
-	return DoLineTraceSingleByObject(Start,End, true);
+	return DoLineTraceSingleByObject(Start,End);
 }
 
 FVector UCustomMovementComponent::GetUnrotatedClimbVelocity() const
@@ -383,5 +393,9 @@ void UCustomMovementComponent::OnMontageEnded(UAnimMontage* Montage, bool bInter
 	if (Montage == IdleToClimbMontage)
 	{
 		StartClimbing();
+	}
+	else
+	{
+		SetMovementMode(MOVE_Walking);
 	}
 }
