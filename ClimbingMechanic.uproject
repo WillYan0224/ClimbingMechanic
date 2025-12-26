@@ -36,15 +36,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "InterchangeEditor",
-			"Enabled": false,
-			"SupportedTargetPlatforms": [
-				"Win64",
-				"Linux",
-				"Mac"
-			]
-		},
-		{
 			"Name": "Bridge",
 			"Enabled": false
 		},
@@ -62,19 +53,6 @@
 		},
 		{
 			"Name": "GLTFExporter",
-			"Enabled": false
-		},
-		{
-			"Name": "Interchange",
-			"Enabled": false,
-			"SupportedTargetPlatforms": [
-				"Win64",
-				"Linux",
-				"Mac"
-			]
-		},
-		{
-			"Name": "InterchangeAssets",
 			"Enabled": false
 		}
 	]
