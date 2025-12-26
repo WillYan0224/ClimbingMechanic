@@ -1,18 +1,17 @@
-Binaries
-binDerivedDataCache
-Intermediate
-Saved
-Build
-
-.vscode
-.vs
+# Unreal Engine
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
 *.VC.db
 *.opensdf
-*.opendb
 *.sdf
-*.sln
 *.suo
-*.xcodeproj
-*.xcworkspace
-*.idea
-*.user
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# Build outputs
+Build/
