@@ -1,17 +1,18 @@
-# Unreal Engine
+# Unreal Engine generated
 Binaries/
-DerivedDataCache/
 Intermediate/
 Saved/
+DerivedDataCache/
+
+# IDE
 .vs/
+.idea/
 *.VC.db
+*.suo
+*.user
 *.opensdf
 *.sdf
-*.suo
+*.ipch
 
-# Rider / JetBrains
-.idea/
-*.iml
-
-# Build outputs
-Build/
+# Rider
+**/.Rider/
