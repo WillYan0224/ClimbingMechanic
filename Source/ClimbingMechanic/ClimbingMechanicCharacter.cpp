@@ -150,7 +150,7 @@ void AClimbingMechanicCharacter::OnClimbActionStarted(const FInputActionValue& V
 	if(!CustomMovementComponent) return;
 
 	if(!CustomMovementComponent->IsClimbing()) 
-	{
+	{ 
 		CustomMovementComponent->ToggleClimbing(true);
 	}
 	else
